@@ -3,28 +3,40 @@ import json
 
 def load_data(file_path):
     """ Loads a JSON file """
-
+    file_path = "animals_data.json"
     with open("animals_data.json", "r") as handle:
         return json.load(handle)
 
 
-def generate_animal_info():
+def serialize_animal(animal_obj):
+    """Serializes a single animal object into an HTML string"""
+    output = '<li class="cards__item">\n'
+    output += f' <div class="card__title">{animal_obj["name"]}</div>\n'
+    output += '  <p class="card__text">\n'
+    output += '  <ul class="cards">\n'
+    output += f'  <li class="cards"><strong>Scientific name:</strong> {animal_obj["taxonomy"]["scientific_name"]}</li>\n'
+    output += f'  <li class="cards"><strong>Diet:</strong> {animal_obj["characteristics"]["diet"]}</li>\n'
+    if 'characteristics' in animal_obj and 'color' in animal_obj['characteristics']:
+        output += f' <li class="cards"><strong>Color:</strong> {animal_obj["characteristics"]["color"]}</li>\n'
+        output += f' <li class="cards"><strong>Location:</strong> {animal_obj["locations"][0]}</li>\n'
+    if 'characteristics' in animal_obj and 'type' in animal_obj['characteristics']:
+        output += f' <li class="cards"><strong>Type:</strong> {animal_obj["characteristics"]["type"]}</li>\n'
+    output += f' <li class="cards"><strong>Lifespan:</strong> {animal_obj["characteristics"]["lifespan"]}</li>\n'
+    output += '  </ul>\n'
+    output += '  </p>\n'
+    output += '</li>\n'
+    return output
+
+
+def generate_animal_info(data):
     """Generates the animal information string"""
     animal_info = ""
-    for animal in animals_data:
-        animal_info += '<li class="cards__item">\n'
-        animal_info += f"<div class='card__title'> {animal['name']}</div>\n"
-        animal_info += '  <p class="card__text">\n'
-        animal_info += f' <strong>Diet:</strong> {animal['characteristics']['diet']}<br/>\n'
-        animal_info += f' <strong>Location:</strong> {", ".join(animal['locations'])}<br/>\n'
-        if 'characteristics' in animal and 'type' in animal['characteristics']:
-            animal_info += f' <strong>Type:</strong> {animal['characteristics']['type']}<br/>\n'
-        animal_info += '  </p>\n'
-        animal_info += '</li>\n'
+    for animal_obj in animals_data:
+        animal_info += serialize_animal(animal_obj)
     return animal_info
 
 
-def animal_html(output_file):
+def animal_html(data, output_file):
     # HTML template with a placeholder
     html_template = """
         <html>
@@ -103,13 +115,13 @@ def animal_html(output_file):
         """
 
     # Generate the animal information string
-    animal_info = generate_animal_info()
+    animal_info = generate_animal_info(animals_data)
 
     # Replace the placeholder with the animal information
     html_content = html_template.replace("__REPLACE_ANIMALS_INFO__", animal_info)
 
     # Write the final HTML content to a file
-    with open("animals_template.html", 'w') as file:
+    with open('animals_template.html', 'w') as file:
         file.write(html_content)
 
 
@@ -117,4 +129,4 @@ def animal_html(output_file):
 animals_data = load_data('animals_data.json')
 
 # Generate the HTML file with animal information
-animal_html(output_file='animals_template.html')
+animal_html(animals_data, 'animals_template.html')
