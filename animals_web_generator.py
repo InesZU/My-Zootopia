@@ -109,7 +109,7 @@ def animal_html(animals_data, output_file):
     html_content = html_template.replace("__REPLACE_ANIMALS_INFO__", animal_info)
 
     # Write the final HTML content to a file
-    with open(output_file, 'w') as file:
+    with open("animals_template.html", 'w') as file:
         file.write(html_content)
 
 
