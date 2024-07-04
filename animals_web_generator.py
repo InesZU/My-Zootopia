@@ -14,16 +14,17 @@ def generate_animal_info(animals_data):
     """Generates the animal information string"""
     animal_info = ""
     for animal in animals_data:
-        animal_info += f"Name: {animal['name']}\n"
-        animal_info += f"Diet: {animal['characteristics']['diet']}\n"
-        animal_info += f"Location: {animal['locations'][0]}\n"
+        animal_info += '<li class="cards__item">\n'
+        animal_info += f"Name: {animal['name']}<br/>\n"
+        animal_info += f"Diet: {animal['characteristics']['diet']}<br/>\n"
+        animal_info += f"Location: {animal['locations'][0]}<br/>\n"
         if 'characteristics' in animal and 'type' in animal['characteristics']:
-            animal_info += f"Type: {animal['characteristics']['type']}\n"
+            animal_info += f"Type: {animal['characteristics']['type']}<br/>\n"
+        animal_info += '</li>\n'
     return animal_info
 
 
 def animal_html(animals_data, output_file):
-    """Generates an HTML file with animal information"""
     # HTML template with a placeholder
     html_template = """
     <html>
@@ -94,9 +95,9 @@ def animal_html(animals_data, output_file):
     </head>
     <body>
         <h1>My Animal Repository</h1>
-        <p class="cards">
-            __REPLACE_ANIMALS_INFO__
-        </p>
+        <ul class="cards">
+        __REPLACE_ANIMALS_INFO__
+        </ul>
     </body>
     </html>
     """
