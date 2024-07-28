@@ -15,7 +15,7 @@ def fetch_data(animal_name):
   load_dotenv()
 
   API_KEY = os.getenv('API_KEY') 
-
+  
   api_url = "https://api.api-ninjas.com/v1/animals"
   headers = {'X-Api-Key': API_KEY}
   params = {'name': animal_name}
