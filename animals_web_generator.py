@@ -27,25 +27,11 @@ def generate_animal_info(animals_data):
 
 def animal_html(output_file, animal_name):
     """Fetches animal data and generates HTML content."""
-    # Fetch animal data from the API
     animals_data = data_fetcher.fetch_data(animal_name)
 
-    # HTML template with a placeholder
-    html_template = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h1>My Animal Repository</h1>
-        <ul class="cards">
-            <!-- Animal cards will be inserted here -->
-            __REPLACE_ANIMALS_INFO__
-        </ul>
-    </body>
-    </html>
-    """
+    # Load the HTML template
+    with open("animals_template.html", "r") as template_file:
+        html_template = template_file.read()
 
     # Check if any data was found
     if not animals_data:
