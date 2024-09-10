@@ -60,3 +60,21 @@ body {
   line-height: 2;
   margin-bottom: 1.25rem;
 }
+/* Style the list of animal details */
+.card__details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card__detail-item {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--gray-darker);
+  padding: 0.2rem 0;
+}
+
+.card__detail-item strong {
+  font-weight: bold;
+  color: var(--gray-dark);
+}
