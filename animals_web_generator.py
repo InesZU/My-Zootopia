@@ -1,66 +1,77 @@
-import data_fetcher
+import json
 
-def generate_animal_info(animals_data):
-    """Generates HTML content for the animals."""
-    animal_info_html = ""
+
+def load_data(file_path):
+    """Loads a JSON file."""
+    with open(file_path, "r") as handle:
+        return json.load(handle)
+
+
+def serialize_animal(animal_obj):
+    """Serializes a single animal object into HTML format with each field in its own list item."""
+    output = ''
+    output += '<li class="cards__item">\n'
+    output += f'  <div class="card__title">{animal_obj["name"]}</div>\n'
+    output += '  <p class="card__text">\n'
+    output += '    <ul class="card__details">\n'
+
+    # Append location information
+    if 'locations' in animal_obj and len(animal_obj['locations']) > 0:
+        output += f'      <li class="card__detail-item"><strong>Location:</strong> {", ".join(animal_obj["locations"])}</li>\n'
+
+    # Append type information
+    if 'characteristics' in animal_obj and 'type' in animal_obj['characteristics']:
+        output += f'      <li class="card__detail-item"><strong>Type:</strong> {animal_obj["characteristics"]["type"]}</li>\n'
+
+    # Append diet information
+    if 'characteristics' in animal_obj and 'diet' in animal_obj['characteristics']:
+        output += f'      <li class="card__detail-item"><strong>Diet:</strong> {animal_obj["characteristics"]["diet"]}</li>\n'
+
+    # Append color information
+    if 'characteristics' in animal_obj and 'color' in animal_obj['characteristics']:
+        output += f'      <li class="card__detail-item"><strong>Color:</strong> {animal_obj["characteristics"]["color"]}</li>\n'
+
+    # Append lifespan information
+    if 'characteristics' in animal_obj and 'lifespan' in animal_obj['characteristics']:
+        output += f'      <li class="card__detail-item"><strong>Lifespan:</strong> {animal_obj["characteristics"]["lifespan"]}</li>\n'
+
+    output += '    </ul>\n'
+    output += '  </p>\n'
+    output += '</li>\n'
+    return output
+
+
+# Main code to generate the HTML file
+def generate_html(animals_data, template_path, output_path):
+    """Generates an HTML file by serializing animal data into a predefined template."""
+    # Initialize an empty string for the list of animals
+    output = '<ul class="cards">\n'
+
+    # Loop through each animal and serialize its data
     for animal in animals_data:
-        lifespan = animal['characteristics'].get('average_lifespan', 'Unknown')
-        diet = animal['characteristics'].get('diet', 'Unknown')
+        output += serialize_animal(animal)
 
-        phylum = animal['taxonomy'].get('phylum', 'Unknown Phylum')
-        taxonomy = f"{animal['taxonomy']['kingdom']} - {phylum}"
-
-        animal_card = f"""
-        <li class="cards__item">
-          <h2 class="card__title">{animal['name']}</h2>
-          <p class="card__text">
-            <strong>Taxonomy:</strong> {taxonomy}<br>
-            <strong>Locations:</strong> {', '.join(animal['locations'])}<br>
-            <strong>Characteristics:</strong> {diet} - {lifespan} lifespan<br>
-            {'<strong>Type:</strong> ' + animal['characteristics']['type'] + '<br>' if 'type' in animal['characteristics'] else ''}
-          </p>
-        </li>
-        """
-        animal_info_html += animal_card
-
-    return animal_info_html
-
-def animal_html(output_file, animal_name):
-    """Fetches animal data and generates HTML content."""
-    animals_data = data_fetcher.fetch_data(animal_name)
+    # Close the unordered list tag
+    output += '</ul>\n'
 
     # Load the HTML template
-    with open("animals_template.html", "r") as template_file:
+    with open(template_path, "r") as template_file:
         html_template = template_file.read()
 
-    # Check if any data was found
-    if not animals_data:
-        html_content = f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Animal Not Found</title>
-        </head>
-        <body>
-            <h1>Oops! We couldn't find information about "{animal_name}"</h1>
-            <p>Please try searching for another animal.</p>
-        </body>
-        </html>
-        """
-    else:
-        # Generate the animal information string
-        animal_info = generate_animal_info(animals_data)
+    # Replace the placeholder in the template with the serialized animal data
+    html_output = html_template.replace("__REPLACE_ANIMALS_INFO__", output)
 
-        # Replace the placeholder with the animal information
-        html_content = html_template.replace("__REPLACE_ANIMALS_INFO__", animal_info)
+    # Write the final HTML to the output file
+    with open(output_path, "w") as output_file:
+        output_file.write(html_output)
 
-    # Write the final HTML content to a file
-    with open(output_file, 'w') as file:
-        file.write(html_content)
+    print(f"HTML file has been generated and saved to {output_path}!")
 
-    print("Website successfully generated to the file animals.html.")
 
+# Example usage
 if __name__ == "__main__":
-    animal_name = input("Enter a name of an animal: ")
-    animal_html(output_file='animals.html', animal_name=animal_name)
+    # Load animal data from the JSON file
+    animals_data = load_data('animals_data.json')
+
+    # Generate the HTML output
+    generate_html(animals_data, 'animals_template.html', 'animals.html')
